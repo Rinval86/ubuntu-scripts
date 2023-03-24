@@ -1,6 +1,18 @@
 #!/bin/bash
-#Written by Rinval86
-#This script was written to perform a Tar or squash.fs backup of Ubuntu. This script was written on Ubuntu 20.04 but may be compatible with other versions.
+
+#######################################################################
+##                                                                   ##
+##     Written by: Rinval86                                          ##
+##     March 23, 2023                                                ##
+##     Version 1.0                                                   ##
+##     https://github.com/Rinval86/ubuntu-scripts                    ##
+##     Creative Commons Zero License                                 ##
+##                                                                   ##
+#######################################################################
+
+##     This script was written to perform a Tar or squash.fs backup of Ubuntu. 
+##     This script was written on Ubuntu 20.04 but may be compatible with other versions.
+
 #The default is squash.fs which can be both mounted as a sqhs file or extracted.
 #This file must be run as root or sudo
 #This file can be stored anywhere but needs execute permissions
@@ -25,18 +37,24 @@
 ##### For example add the following line at the end of the file to backup every day at 3 AM server time.
 ##### 0 3 * * * /path/to/file/<backup.sh file>
 
+##** DISCLAIMER: THIS SCRIPT WAS NOT TESTED WITH LOCATIONS WITH SPACES. **##
+
 ## Configurable Variables
 #Backup Directory and File. Aka folder where you want the backups stored
-BACKUP_DIR="/media/backup"
+BACKUP_DIR='/media/backup'
+
+#Target location to be backed up.
+TARGET_DIR='/'
 
 #Log file details. Aka folder and file where you want the log file.
-LOG_DIR="/var/log/backup"
+LOG_DIR='/var/log/backup'
 
 #sub root Directories to exclude in squashfs seperated by a space and no slashes
-SQFS_EXCLUDE="media dev run mnt proc sys tmp lost+found var/log swap.img var/lib/plexmediaserver"
+SQFS_EXCLUDE='media dev run mnt proc sys tmp lost+found var/log swap.img'
 
-#Directories to exclude in in tar file seperated by a space and be sure to use format "--exclude=<dir with slashes>
-TAR_EXCLUDE="--exclude=/media --exclude=/dev --exclude=/run --exclude=/mnt --exclude=/proc --exclude=/sys --exclude=/tmp --exclude=/lost+found --exclude=/var/log --exclude=/swap.img --exclude=/var/lib/plexmediaserver"
+#Directories to exclude in in tar file seperated by a space and be sure to use format "--exclude=<dir with slashes> 
+#Be sure to 
+TAR_EXCLUDE='--exclude=/media --exclude=/dev --exclude=/run --exclude=/mnt --exclude=/proc --exclude=/sys --exclude=/tmp --exclude=/lost+found --exclude=/var/log --exclude=/swap.img'
 
 #Number of days to retain log files
 RETAIN=30
@@ -106,7 +124,7 @@ if [ $BACK_TYPE1 = "sqfs" ]
 then
 	echo "## Creating Squashfile backup at $BACKUP_FILE.sqfs."
 	echo "## This could take some time. Please wait..."
-	sudo mksquashfs / $BACKUP_FILE.sqfs -e $SQFS_EXCLUDE -percentage -processors $PROCS
+	sudo mksquashfs $TARGET_DIR $BACKUP_FILE.sqfs -e $SQFS_EXCLUDE -percentage -processors $PROCS
 else
 	echo "Skipping Squahsfs backup"
 fi
@@ -116,7 +134,7 @@ if [ $BACK_TYPE2 = "tar" ]
 then
 	echo "## Creating tar backup at $BACKUP_FILE.tar.gz."
 	echo "## This could take some time. Please wait..."
-	tar cpjf $BACKUP_FILE.tar.gz --totals $TAR_EXCLUDE_BAK $TAR_EXCLUDE /
+	tar cpjf $BACKUP_FILE.tar.gz --totals $TAR_EXCLUDE_BAK $TAR_EXCLUDE $TARGET_DIR
 else
 	echo "Skipping tar backup"
 fi
