@@ -1,5 +1,6 @@
 # ubuntu-scripts
 All scripts created from scratch by Rinval86.
+Various sources were used in obtaining the knowledge to create these scripts. Thanks to all contributers of the sources utilized.
 These scripts were written on Ubuntu 20.04 but may be compatible with other versions.
 Check out additional things I have created at https://github.com/Rinval86?tab=repositories
 
@@ -23,5 +24,13 @@ CLI
 		
 		**Be sure to modify the sript variables** for your desired system and locations.
 		
-	
+	2. recode.sh
 
+		This script was created to automate handbrake recode of video files using handbrake CLI and one of its presets.
+		
+		This script uses a combination of Handbrake CLI and Crontab to search a directory for supported video files then transcodes them to a handbrake preset.
+		
+		recode.sh out of the box requires the following four folders to be created in the same directory the script is put into. complete, log, original, recode. however you can adjust the variables inside the recode.sh script to target any folders with appropriate permissions.
+		
+		you must install the handbrake-cli package for this script to work. 
+		**sudo apt install -y handbrake-cli**

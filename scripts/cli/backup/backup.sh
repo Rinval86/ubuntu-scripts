@@ -3,8 +3,9 @@
 #######################################################################
 ##                                                                   ##
 ##     Written by: Rinval86                                          ##
-##     March 23, 2023                                                ##
-##     Version 1.0                                                   ##
+##     Created = March 23, 2023                                      ##
+##     Modified = April 7, 2023                                      ##
+##     Version 1.1                                                   ##
 ##     https://github.com/Rinval86/ubuntu-scripts                    ##
 ##     Creative Commons Zero License                                 ##
 ##                                                                   ##
@@ -75,19 +76,24 @@ APT_LIST_FILE="$BACKUP_DIR/$HOST-apt_$TODAY.txt"
 LOG_FILE="$LOG_DIR/backup_$HOST-$TODAY.log"
 TAR_EXCLUDE_BAK="--exclude=$BACKUP_FILE.tar.gz"
 
+## Functions
+log() {
+	OUTTEXT=$(date +"%D %H:%M:%S")" $1"
+	echo -e "$OUTTEXT"
+}
 
 ##Require sudo
 executioner=$(whoami)
 
 if [ "$executioner" != "root" ]; then
-	echo "This scriipt must be executed with sudo or root."
+	log "This scriipt must be executed with sudo or root."
 	exit 1
 fi
 
 ## Make Log directory and file
 #detect and build the log if missing and set permissions.
 
-echo "## PRESTART - Creating log file"
+log "## PRESTART - Creating log file"
 if [ ! -d $LOG_DIR ]
 then
 	mkdir -p $LOG_DIR
@@ -107,39 +113,39 @@ fi
 ## Co-write Console and log file
 exec > >(tee -a $LOG_FILE)
 exec 2> >(tee -a $LOG_FILE >&2)
-echo "## PRESTART - log file created"
+log "## PRESTART - log file created"
 
 ## Cleaning up old backup files
-echo "## Cleaning up files older than $RETAIN days in $BACKUP_DIR and $LOG_DIR"
+log "## Cleaning up files older than $RETAIN days in $BACKUP_DIR and $LOG_DIR"
 find "$BACKUP_DIR" -type f -mtime +$RETAIN -delete -print
 find "$LOG_DIR" -type f -mtime +$RETAIN -delete -print
 
 
 ## Output the list of currently installed apt packages
-echo "## Outputing installed apt packages to $APT_LIST_FILE"
+log "## Outputing installed apt packages to $APT_LIST_FILE"
 apt list --installed > $APT_LIST_FILE
 
 ## Create system backup of root as a squash file and exclude home media dev run mnt proc sys tmp
 if [ $BACK_TYPE1 = "sqfs" ]
 then
-	echo "## Creating Squashfile backup at $BACKUP_FILE.sqfs."
-	echo "## This could take some time. Please wait..."
+	log "## Creating Squashfile backup at $BACKUP_FILE.sqfs."
+	log "## This could take some time. Please wait..."
 	sudo mksquashfs $TARGET_DIR $BACKUP_FILE.sqfs -e $SQFS_EXCLUDE -percentage -processors $PROCS
 else
-	echo "Skipping Squahsfs backup"
+	log "Skipping Squahsfs backup"
 fi
 
 ## Create system backup of root as a tar file and exclude home media dev run mnt proc sys tmp
 if [ $BACK_TYPE2 = "tar" ]
 then
-	echo "## Creating tar backup at $BACKUP_FILE.tar.gz."
-	echo "## This could take some time. Please wait..."
+	log "## Creating tar backup at $BACKUP_FILE.tar.gz."
+	log "## This could take some time. Please wait..."
 	tar cpjf $BACKUP_FILE.tar.gz --totals $TAR_EXCLUDE_BAK $TAR_EXCLUDE $TARGET_DIR
 else
-	echo "Skipping tar backup"
+	log "Skipping tar backup"
 fi
 
 ##close out script.
-echo "## Backup complete. browse to $BACKUP_DIR to view the files."
+log "## Backup complete. browse to $BACKUP_DIR to view the files."
 
 exit 0
